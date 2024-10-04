@@ -10,8 +10,19 @@ module.exports = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        primary: "#1DA1F2",
+        secondary: "#14171A",
       },
+      fontFamily: {
+        sans: ["pretendardMedium", "Helvetica", "Arial", "sans-serif"],
+      },
+      spacing: {
+        72: "18rem",
+        84: "21rem",
+        96: "24rem",
+      },
+      scrollbark: ["hidden"],
     },
   },
-  plugins: [],
+  plugins: [require("tailwind-scrollbar-hide")],
 };
