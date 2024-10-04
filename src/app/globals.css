@@ -33,3 +33,12 @@ body {
   font-weight: normal;
   font-style: normal;
 }
+
+.history::-webkit-scrollbar {
+  display: none;
+}
+
+.history {
+  -ms-overflow-style: none; /* IE and 엣지 */
+  scrollbar-width: none; /* 파이어폭스 */
+}

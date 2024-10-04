@@ -21,7 +21,7 @@ module.exports = {
         84: "21rem",
         96: "24rem",
       },
-      scrollbark: ["hidden"],
+      scrollbar: ["hidden"],
     },
   },
   plugins: [require("tailwind-scrollbar-hide")],

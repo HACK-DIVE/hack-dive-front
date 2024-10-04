@@ -76,8 +76,8 @@ export default function Home() {
       <header className="flex h-16 items-center justify-center bg-white">
         ansys
       </header>
-      {/* message */}
-      <div className="scrollbar-hide flex-1 gap-2 overflow-y-auto bg-red-400 p-6">
+      {/* eslint-disable-next-line tailwindcss/no-custom-classname */}
+      <div className="history flex-1 gap-2 overflow-y-auto bg-red-400 p-6">
         {/* 마지막 요소를 제외한 모든 메시지 렌더링 */}
         {messages
           .slice(0, -1)

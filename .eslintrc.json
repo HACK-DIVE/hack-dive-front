@@ -2,7 +2,8 @@
   "extends": [
     "next/core-web-vitals",
     "eslint:recommended",
-    "plugin:react/recommended"
+    "plugin:react/recommended",
+    "plugin:tailwindcss/recommended" // Tailwind CSS 설정 추가
   ],
   "plugins": ["tailwindcss", "react-hooks"],
   "rules": {

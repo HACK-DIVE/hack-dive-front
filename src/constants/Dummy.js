@@ -1,6 +1,7 @@
 export const Dummy = {
-    id: 1,
-    image: null,
-    name: "assistant",
-    message: "abcdef",
+  id: 1,
+  //   image: null,
+  role: "assistant",
+  content: "abcdef",
+  createdAt: "asdasd",
 };
