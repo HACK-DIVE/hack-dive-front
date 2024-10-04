@@ -13,6 +13,9 @@ module.exports = {
         primary: "#1DA1F2",
         secondary: "#14171A",
       },
+      minWidth: {
+        600: "600px",
+      },
       fontFamily: {
         sans: ["pretendardMedium", "Helvetica", "Arial", "sans-serif"],
       },

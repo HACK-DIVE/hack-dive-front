@@ -1,4 +1,7 @@
 "use client";
+import Logo from "@/images/logo/ansys_chatbot_logo.svg";
+import PoweredByLogo from "@/images/logo/poweredby_logo.svg";
+import Send from "@/images/icon/send.svg";
 import AiDialog from "@/components/message/AiDialog";
 import UserDialog from "@/components/message/UserDialog";
 import axios from "axios";
@@ -45,17 +48,6 @@ export default function Home() {
     }
   }, [messages]);
 
-  const handleCheck = async (e) => {
-    e.preventDefault();
-
-    try {
-      const res = await axios.get(process.env.NEXT_PUBLIC_API_URL);
-      console.log("adsasd");
-      console.log(res);
-    } catch (error) {
-      console.error("error sending msg", error);
-    }
-  };
   //컴포넌트가 마운트 될 때 메시지 로드
   useEffect(() => {
     fetchMessages();
@@ -72,12 +64,12 @@ export default function Home() {
   //   };
   // }, []);
   return (
-    <div className="flex h-screen flex-col">
-      <header className="flex h-16 items-center justify-center bg-white">
-        ansys
-      </header>
+    <div className="flex h-screen min-w-80 flex-col bg-gradient-to-tr from-[#000000] to-[#0C3E8D]">
+      <div className="relative flex h-24 items-center justify-start px-8 py-7">
+        <Logo className="h-full w-auto" />
+      </div>
       {/* eslint-disable-next-line tailwindcss/no-custom-classname */}
-      <div className="history flex-1 gap-2 overflow-y-auto bg-red-400 p-6">
+      <div className="history flex-1 gap-2 overflow-y-auto p-6">
         {/* 마지막 요소를 제외한 모든 메시지 렌더링 */}
         {messages
           .slice(0, -1)
@@ -111,29 +103,26 @@ export default function Home() {
         <div ref={endOfMessagesRef}></div>
       </div>
       {/* input 창 */}
-      <div className="flex flex-row justify-around bg-white p-6">
-        <div className="flex w-full gap-2 rounded border border-gray-300 p-2">
+      <div className="sticky bottom-0 flex min-h-32 flex-col border-[#595959] bg-[#1D1D1D] px-14 pb-6 pt-10">
+        <div className="flex w-full justify-between gap-2 rounded">
           <input
-            className="flex-1"
             type="text"
+            className="flex w-3/4 gap-1 rounded bg-[#1D1D1D] p-1 align-middle text-[#BDBDBD]"
             placeholder="메시지를 입력하세요"
             value={input}
             onChange={(e) => {
               setInput(e.target.value);
             }}
           ></input>
-          <button
-            className="rounded border border-gray-300 p-2 text-center font-black"
+          <Send
+            className="w-8 cursor-pointer fill-[#BDBDBD] text-center hover:fill-current hover:text-[#2B4BDA]"
             onClick={handleSubmitMsg}
           >
             입력
-          </button>
-          <button
-            className="rounded border border-gray-300 p-2 text-center font-black"
-            onClick={handleCheck}
-          >
-            헬스체크
-          </button>
+          </Send>
+        </div>
+        <div className="relative mt-6 flex h-8 items-center justify-center">
+          <PoweredByLogo className="h-full w-auto" />
         </div>
       </div>
     </div>
