@@ -41,9 +41,14 @@ export default function Home() {
         const aiUrl = await postAIMessageUrl();
 
         const eventSource = new EventSource(aiUrl);
-
         eventSource.onmessage = async (event) => {
-          const newContent = event.data.replace(/\*/g, " ");
+          // const newContent = event.data.replace(/\*/g, " ");
+
+          const newContent = event.data;
+
+          console.log("===========");
+          console.log(newContent);
+
           setStreamingMessage((prev) => prev + newContent);
         };
 
@@ -104,8 +109,6 @@ export default function Home() {
       </div>
       {/* eslint-disable-next-line tailwindcss/no-custom-classname */}
       <div className="history flex-1 gap-2 overflow-y-auto p-6">
-        {/* 마지막 요소를 제외한 모든 메시지 렌더링 */}
-        {/* 모든 메시지 렌더링 */}
         {messages.map((item, idx) =>
           item.role === "user" ? (
             <UserDialog data={item} key={idx} />
