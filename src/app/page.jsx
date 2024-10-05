@@ -6,15 +6,19 @@ import AiDialog from "@/components/message/AiDialog";
 import UserDialog from "@/components/message/UserDialog";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
+import { getHistory, postAIMessageUrl, postMessage } from "@/services/messages";
 
 export default function Home() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const endOfMessagesRef = useRef(null);
+  const [streamingMessage, setStreamingMessage] = useState("");
 
-  const fetchMessages = async () => {
+  const loadMessages = async () => {
     try {
-      const res = await axios.get("/api/messages");
+      const res = await getHistory();
+      console.log("===========");
+      console.log(res);
       setMessages(res.data);
     } catch (error) {
       console.error("error fetching data", error);
@@ -25,44 +29,74 @@ export default function Home() {
     e.preventDefault();
 
     try {
-      const newMessage = { id: 1, image: null, name: "user", message: input };
-      const newAiMessage = {
-        id: 2,
-        image: null,
-        name: "assistant",
-        message: "테스트 메세지입니다 저는 당신의 도우미 도우너에요",
-      };
-      //TODO 임시 나중엔 USER의 메시지만 가도록 수정
-      const res = await axios.post("/api/messages", [newMessage, newAiMessage]);
-      setInput(""); // 입력 필드 초기화
-      setMessages(res.data.length === 1 ? [...res.data] : [...res.data]);
+      const newMessage = input;
+
+      const res = await postMessage(newMessage);
+      if (res.status === 200) {
+        // 사용자 메시지 추가
+        setMessages((prev) => [...prev, { role: "user", content: input }]);
+        setInput(""); // 입력 필드 초기화
+        setStreamingMessage(""); // 스트리밍 메시지 초기화
+        // AI 응답을 이벤트 스트림으로 받기
+        const aiUrl = await postAIMessageUrl();
+
+        const eventSource = new EventSource(aiUrl);
+
+        eventSource.onmessage = async (event) => {
+          const newContent = event.data.replace(/\*/g, " ");
+          setStreamingMessage((prev) => prev + newContent);
+        };
+
+        eventSource.onerror = () => {
+          console.error("Error in AI message stream.");
+          eventSource.close();
+        };
+      }
     } catch (error) {
-      console.error("error sending msg", error);
+      if (error.response) {
+        console.error("Error sending msg:", error.response.data);
+      } else {
+        console.error("Unexpected error:", error.message);
+      }
     }
   };
-
+  console.log(messages);
   // 메시지가 업데이트될 때 스크롤
   useEffect(() => {
     if (endOfMessagesRef.current) {
       endOfMessagesRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]);
+  }, [messages, streamingMessage]);
+
+  // 스트리밍 메시지가 변경될 때마다 messages 업데이트
+  useEffect(() => {
+    if (streamingMessage) {
+      setMessages((prev) => {
+        const updatedMessages = [...prev];
+        if (
+          updatedMessages.length > 0 &&
+          updatedMessages[updatedMessages.length - 1].role === "assistant"
+        ) {
+          updatedMessages[updatedMessages.length - 1] = {
+            ...updatedMessages[updatedMessages.length - 1],
+            content: streamingMessage,
+          };
+        } else {
+          updatedMessages.push({
+            role: "assistant",
+            content: streamingMessage,
+          });
+        }
+        return updatedMessages;
+      });
+    }
+  }, [streamingMessage]);
 
   //컴포넌트가 마운트 될 때 메시지 로드
   useEffect(() => {
-    fetchMessages();
+    loadMessages();
   }, []);
-  // useEffect(() => {
-  //   const eventSource = new EventSource("YOUR_API_ENDPOINT");
 
-  //   eventSource.onmessage = (event) => {
-  //     setMessages((prevMessages) => [...prevMessages, event.data]);
-  //   };
-
-  //   return () => {
-  //     eventSource.close();
-  //   };
-  // }, []);
   return (
     <div className="flex h-screen min-w-80 flex-col bg-gradient-to-tr from-[#000000] to-[#0C3E8D]">
       <div className="relative flex h-24 items-center justify-start px-8 py-7">
@@ -71,35 +105,14 @@ export default function Home() {
       {/* eslint-disable-next-line tailwindcss/no-custom-classname */}
       <div className="history flex-1 gap-2 overflow-y-auto p-6">
         {/* 마지막 요소를 제외한 모든 메시지 렌더링 */}
-        {messages
-          .slice(0, -1)
-          .map((item, idx) =>
-            item.id === 1 ? (
-              <UserDialog data={item} key={idx} />
-            ) : (
-              <AiDialog data={item} key={idx} />
-            ),
-          )}
-
-        {/* 마지막 메시지 요소 렌더링 */}
-        {messages.length > 0 && (
-          <div className="rounded-lg bg-yellow-400 p-4">
-            {messages[messages.length - 1].id === 1 ? (
-              <UserDialog
-                data={messages[messages.length - 1]}
-                key={messages.length - 1}
-                last={true}
-              />
-            ) : (
-              <AiDialog
-                data={messages[messages.length - 1]}
-                key={messages.length - 1}
-                last={true}
-              />
-            )}
-          </div>
+        {/* 모든 메시지 렌더링 */}
+        {messages.map((item, idx) =>
+          item.role === "user" ? (
+            <UserDialog data={item} key={idx} />
+          ) : (
+            <AiDialog data={item} key={idx} />
+          ),
         )}
-
         <div ref={endOfMessagesRef}></div>
       </div>
       {/* input 창 */}
