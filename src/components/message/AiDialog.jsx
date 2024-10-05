@@ -1,5 +1,6 @@
-export default function AiDialog({ data, isLoading }) {
+export default function AiDialog({ data, isLoading = false }) {
   const { name, content, last } = data;
+  console.log(data.content);
 
   return (
     <div className={`whitespace-pre-wrap p-2 ${!last ? "mb-2" : ""} `}>

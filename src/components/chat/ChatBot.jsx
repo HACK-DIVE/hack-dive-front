@@ -34,47 +34,61 @@ export default function ChatBot({ spaceId }) {
   const [workSpaceId, setWorkSpaceId] = useState(spaceId); //todo 추후 랜덤으로
   const [isFirst, setIsFirst] = useState(messages.length > 0 ? 0 : 1);
 
-  const loadMessages = useCallback(async () => {
+  const handleGreeting = async () => {
+    // 사용자 메시지 추가
+    // AI 응답을 이벤트 스트림으로 받기
+    const aiUrl = await postAIMessageUrl({ workSpaceId, isFirst: 1 });
+    const eventSource = new EventSource(aiUrl);
+
+    eventSource.onmessage = async (event) => {
+      const newContent = event.data.replace(/\*/g, " ");
+      if (newContent) {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: newContent },
+        ]);
+      } else {
+        console.error("Received undefined content");
+      }
+
+      // setStreamingMessage((prev) => prev + newContent);
+    };
+    // 서버와의 연결이 닫힐 때 실행
+    eventSource.onclose = () => {
+      console.log("Connection closed by server or streaming finished.");
+      eventSource.close(); // 연결 닫기
+    };
+
+    eventSource.onerror = () => {
+      console.log("Error in AI message stream.");
+      eventSource.close();
+    };
+
+    // 첫 메시지를 보낸 후 isFirst를 0으로 설정
+    setIsFirst(0);
+
+    return () => {
+      eventSource.close();
+    };
+  };
+
+  const loadMessages = async () => {
     try {
       const res = await getHistory(workSpaceId);
 
       const msgs = res.data;
+      console.log("msg");
       console.log(msgs);
-      setMessages(msgs);
 
       if (msgs.length === 0 && isFirst === 1) {
         // 첫 메시지만 보냄
-        await handleEventMsg();
-        setIsFirst(0); // 첫 메시지 전송 후 isFirst를 0으로 설정
+        console.log("grret");
+        await handleGreeting(); // 첫 메시지 전송 후 isFirst를 0으로 설정
+      } else {
+        setMessages([...msgs]);
       }
     } catch (error) {
       console.error("error fetching data", error);
-    }
-  });
-
-  const handleEventMsg = async () => {
-    // 사용자 메시지 추가
-    if (isFirst === 1) {
-      // AI 응답을 이벤트 스트림으로 받기
-      const aiUrl = await postAIMessageUrl({ workSpaceId, isFirst });
-      const eventSource = new EventSource(aiUrl);
-
-      eventSource.onmessage = async (event) => {
-        const newContent = event.data.replace(/\*/g, " ");
-        setStreamingMessage((prev) => prev + newContent);
-      };
-
-      eventSource.onerror = () => {
-        console.error("Error in AI message stream.");
-        eventSource.close();
-      };
-
-      // 첫 메시지를 보낸 후 isFirst를 0으로 설정
-      setIsFirst(0);
-
-      return () => {
-        eventSource.close();
-      };
     }
   };
 
@@ -118,8 +132,15 @@ export default function ChatBot({ spaceId }) {
             setStreamingMessage((prev) => prev + newContent);
           };
 
+          // 서버와의 연결이 닫힐 때 실행
+          eventSource.onclose = () => {
+            console.log("Connection closed by server or streaming finished.");
+            setIsFirst(0); // 첫 메시지 전송 완료 후 초기화
+            eventSource.close(); // 연결 닫기
+          };
+
           eventSource.onerror = () => {
-            console.error("Error in AI message stream.");
+            console.log("Error in AI message stream.");
             eventSource.close();
           };
 
@@ -148,8 +169,10 @@ export default function ChatBot({ spaceId }) {
     if (streamingMessage) {
       setMessages((prev) => {
         const updatedMessages = [...prev];
+
         if (
           updatedMessages.length > 0 &&
+          updatedMessages.length !== 1 &&
           updatedMessages[updatedMessages.length - 1].role === "assistant"
         ) {
           updatedMessages[updatedMessages.length - 1] = {
@@ -166,32 +189,78 @@ export default function ChatBot({ spaceId }) {
       });
     }
   }, [streamingMessage]);
+
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       handleSubmitMsg();
     }
   };
+  // useEffect(() => {
+  //   if (streamingMessage) {
+  //     // 스트리밍 메시지 수신 중에는 메시지를 계속 업데이트하지 않음
+  //     return;
+  //   }
+  // }, [streamingMessage]);
+
+  // const onWorkSpaceId = async () => {
+  //   try {
+  //     const res = await postWorkSpace();
+
+  //     if (res.status !== 200) {
+  //       throw new Error();
+  //     }
+
+  //     setWorkSpaceId(res.data); // 워크스페이스 ID 업데이트
+  //   } catch (err) {
+  //     console.error("refresh error", err);
+  //   }
+  // };
 
   const onClickRefresh = async () => {
     try {
+      // 상태 초기화
+      setIsFirst(1); // 처음 상태로 되돌림
+      setMessages([]); // 메시지 리스트 초기화
+
+      // 새로운 워크스페이스 요청
       const res = await postWorkSpace();
-      setIsFirst(1);
-      setMessages([]);
+
       if (res.status !== 200) {
         throw new Error();
       }
+
+      // 새로운 워크스페이스 ID 설정
       setWorkSpaceId(res.data);
     } catch (err) {
-      console.error("refresh error");
+      console.error("refresh error", err);
     }
   };
 
-  //컴포넌트가 마운트 될 때 메시지 로드
+  // const onClickRefresh = async () => {
+  //   try {
+  //     // 먼저 상태 초기화
+  //     await setIsFirst(1); // 처음 상태로 설정
+  //     await setMessages([]); // 메시지 초기화
+
+  //     const res = await postWorkSpace();
+  //     if (res.status !== 200) {
+  //       throw new Error();
+  //     }
+  //     await setWorkSpaceId(res.data);
+  //   } catch (err) {
+  //     console.error("refresh error");
+  //   }
+  // };
+
   useEffect(() => {
     loadMessages();
-    setGuideChoice(0);
+  }, []);
+
+  useEffect(() => {
+    if (workSpaceId && isFirst === 1) {
+      handleGreeting(); // 처음 상태일 때만 그리팅 메시지 전송
+    }
   }, [workSpaceId]);
-  console.log(isFirst);
   return (
     <div className="flex h-screen min-w-80 flex-col bg-gradient-to-tr from-[#000000] to-[#0C3E8D]">
       <div className="relative flex h-24 items-center justify-between px-6 py-7">
@@ -207,10 +276,9 @@ export default function ChatBot({ spaceId }) {
             <UserDialog key={idx} data={item} />
           ) : item.content !== "images" ? (
             <div key={idx}>
-              {/* 상위 div에 key를 할당 */}
               <AiDialog data={item} />
-              {messages.length === 1 && (
-                <div key={idx} className={"flex flex-row gap-3"}>
+              {isFirst === 1 && (
+                <div className={"flex flex-row gap-3"}>
                   <Button
                     text={"재료"}
                     onClick={() => onClickGuideButton(1)}

@@ -25,7 +25,7 @@ export default function Page() {
     };
 
     fetchWorkSpaceId();
-  }, [workSpaceId]); // 의존성 배열에 추가
+  }, []); // 의존성 배열에 추가
 
   return (
     <>
