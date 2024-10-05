@@ -4,7 +4,7 @@ import Send from "@/images/icon/send.svg";
 import Refresh from "@/images/icon/refresh.svg";
 import AiDialog from "@/components/message/AiDialog";
 import UserDialog from "@/components/message/UserDialog";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   getHistory,
   postAIMessageUrl,
@@ -25,19 +25,19 @@ const checkKeywords = (str) => {
   return regex.test(str);
 };
 
-export default function ChatBot({ spaceId }) {
+export default function ChatBot({ spaceId, isFirst, setIsFirst }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [guideChoice, setGuideChoice] = useState(0);
   const endOfMessagesRef = useRef(null);
   const [streamingMessage, setStreamingMessage] = useState("");
   const [workSpaceId, setWorkSpaceId] = useState(spaceId); //todo 추후 랜덤으로
-  const [isFirst, setIsFirst] = useState(messages.length > 0 ? 0 : 1);
+  // const [isFirst, setIsFirst] = useState(messages.length > 0 ? 0 : 1);
 
   const handleGreeting = async () => {
     // 사용자 메시지 추가
     // AI 응답을 이벤트 스트림으로 받기
-    const aiUrl = await postAIMessageUrl({ workSpaceId, isFirst: 1 });
+    const aiUrl = await postAIMessageUrl({ workSpaceId, isFirst });
     const eventSource = new EventSource(aiUrl);
 
     eventSource.onmessage = async (event) => {
@@ -104,6 +104,7 @@ export default function ChatBot({ spaceId }) {
   };
 
   const handleSubmitMsg = async (buttonMessage = "") => {
+    console.log("firsr");
     const msg = buttonMessage !== "" ? buttonMessage : input;
     const newMessage = { message: msg, workSpaceId: workSpaceId };
 
@@ -195,26 +196,6 @@ export default function ChatBot({ spaceId }) {
       handleSubmitMsg();
     }
   };
-  // useEffect(() => {
-  //   if (streamingMessage) {
-  //     // 스트리밍 메시지 수신 중에는 메시지를 계속 업데이트하지 않음
-  //     return;
-  //   }
-  // }, [streamingMessage]);
-
-  // const onWorkSpaceId = async () => {
-  //   try {
-  //     const res = await postWorkSpace();
-
-  //     if (res.status !== 200) {
-  //       throw new Error();
-  //     }
-
-  //     setWorkSpaceId(res.data); // 워크스페이스 ID 업데이트
-  //   } catch (err) {
-  //     console.error("refresh error", err);
-  //   }
-  // };
 
   const onClickRefresh = async () => {
     try {
@@ -236,31 +217,16 @@ export default function ChatBot({ spaceId }) {
     }
   };
 
-  // const onClickRefresh = async () => {
-  //   try {
-  //     // 먼저 상태 초기화
-  //     await setIsFirst(1); // 처음 상태로 설정
-  //     await setMessages([]); // 메시지 초기화
-
-  //     const res = await postWorkSpace();
-  //     if (res.status !== 200) {
-  //       throw new Error();
-  //     }
-  //     await setWorkSpaceId(res.data);
-  //   } catch (err) {
-  //     console.error("refresh error");
-  //   }
-  // };
-
   useEffect(() => {
     loadMessages();
-  }, []);
+  }, [isFirst, workSpaceId]);
 
-  useEffect(() => {
-    if (workSpaceId && isFirst === 1) {
-      handleGreeting(); // 처음 상태일 때만 그리팅 메시지 전송
-    }
-  }, [workSpaceId]);
+  // useEffect(() => {
+  //   if (workSpaceId && isFirst === 1) {
+  //     console.log("그라탕");
+  //     handleGreeting(); // 처음 상태일 때만 그리팅 메시지 전송
+  //   }
+  // }, []);
   return (
     <div className="flex h-screen min-w-80 flex-col bg-gradient-to-tr from-[#000000] to-[#0C3E8D]">
       <div className="relative flex h-24 items-center justify-between px-6 py-7">
@@ -277,7 +243,7 @@ export default function ChatBot({ spaceId }) {
           ) : item.content !== "images" ? (
             <div key={idx}>
               <AiDialog data={item} />
-              {isFirst === 1 && (
+              {idx === 0 && (
                 <div className={"flex flex-row gap-3"}>
                   <Button
                     text={"재료"}
@@ -313,12 +279,16 @@ export default function ChatBot({ spaceId }) {
             }}
             onKeyDown={handleKeyDown} // Enter 키를 감지
           ></input>
-          <Send
-            className="w-8 cursor-pointer fill-[#BDBDBD] text-center hover:fill-current hover:text-[#2B4BDA]"
-            onClick={handleSubmitMsg}
-          >
-            입력
-          </Send>
+
+          <div onClick={handleSubmitMsg}>
+            <Send
+              onClick={(e) => {
+                e.preventDefault(); // 기본 동작 방지
+                handleSubmitMsg();
+              }}
+              className="w-8 cursor-pointer fill-[#BDBDBD] text-center hover:fill-current hover:text-[#2B4BDA]"
+            />
+          </div>
         </div>
         <div className="relative mt-6 flex h-8 items-center justify-center">
           <PoweredByLogo className="h-full w-auto" />

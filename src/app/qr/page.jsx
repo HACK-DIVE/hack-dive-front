@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 export default function Page() {
   const [workSpaceId, setWorkSpaceId] = useState(null); // null로 초기화
+  const [isFirst, setIsFirst] = useState(1); // isFirst 상태를 부모로 이동
 
   useEffect(() => {
     const fetchWorkSpaceId = async () => {
@@ -32,7 +33,11 @@ export default function Page() {
       {workSpaceId === null ? ( // null 체크
         <p>Loading workspace...</p>
       ) : (
-        <ChatBot spaceId={workSpaceId}></ChatBot>
+        <ChatBot
+          spaceId={workSpaceId}
+          isFirst={isFirst}
+          setIsFirst={setIsFirst}
+        />
       )}
     </>
   );

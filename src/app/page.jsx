@@ -9,6 +9,8 @@ import ChatSVG from "@/images/icon/ansysChat.svg";
 export default function Home() {
   const [isOpenChatBot, setOpenChatBot] = useState(false);
   const [workSpaceId, setWorkSpaceId] = useState(0);
+  const [isFirst, setIsFirst] = useState(1); // isFirst 상태를 부모로 이동
+
   const onWorkSpaceId = async () => {
     if (workSpaceId !== 0) return; // 이미 workSpaceId가 설정되었으면 더 이상 요청하지 않음
 
@@ -26,9 +28,7 @@ export default function Home() {
 
   useEffect(() => {
     // 비동기 IIFE를 사용하여 컴포넌트 마운트 시 workSpaceId 설정
-    (async () => {
-      await onWorkSpaceId();
-    })();
+    onWorkSpaceId();
   }, []);
 
   const onClickChatbotHandler = () => {
@@ -71,7 +71,13 @@ export default function Home() {
         }`}
       >
         <div className="h-full">
-          {isOpenChatBot && <ChatBot spaceId={workSpaceId} />}
+          {isOpenChatBot && (
+            <ChatBot
+              spaceId={workSpaceId}
+              isFirst={isFirst}
+              setIsFirst={setIsFirst}
+            />
+          )}
         </div>
       </div>
     </div>
