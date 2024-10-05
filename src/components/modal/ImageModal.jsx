@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export const ImageModal = ({ src, alt, isOpen, onClose }) => {
   if (!isOpen) return null;
 
@@ -10,9 +12,12 @@ export const ImageModal = ({ src, alt, isOpen, onClose }) => {
         className="max-h-[90%] max-w-[90%]"
         onClick={(e) => e.stopPropagation()}
       >
-        <img
+        <Image
           src={src}
           alt={alt}
+          layout="responsive"
+          width={16}
+          height={9}
           className="max-h-[70vh] max-w-full object-contain"
         />
         <button

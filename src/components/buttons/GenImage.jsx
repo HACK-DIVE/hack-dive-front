@@ -5,7 +5,6 @@ import { ImageModal } from "../modal/ImageModal";
 export default function GenImage({ src, alt, onClick }) {
   const [isOpen, setIsModalOpen] = useState(false);
   const onClickHandler = () => {
-    console.log("click");
     setIsModalOpen(!isOpen);
   };
   return (
