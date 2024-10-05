@@ -26,10 +26,10 @@ export default function Home() {
 
   useEffect(() => {
     // 비동기 IIFE를 사용하여 컴포넌트 마운트 시 workSpaceId 설정
-    (async () => {
-      await onWorkSpaceId();
-    })();
-  }, [onWorkSpaceId]);
+    // (async () => {
+    //   await onWorkSpaceId();
+    // })();
+  }, []);
 
   const onClickChatbotHandler = () => {
     if (workSpaceId !== 0) {
@@ -71,7 +71,7 @@ export default function Home() {
         }`}
       >
         <div className="h-full">
-          {isOpenChatBot && <ChatBot spaceId={workSpaceId} />}
+          {/* {isOpenChatBot && <ChatBot spaceId={workSpaceId} />} */}
         </div>
       </div>
     </div>

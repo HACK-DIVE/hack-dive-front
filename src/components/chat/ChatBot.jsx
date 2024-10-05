@@ -22,7 +22,6 @@ const checkKeywords = (str) => {
   const regex = /(디자인을 추천해줘|디자인 추천|디자인 추천해줘)/;
 
   // match로 정규표현식에 매칭되는지 검사
-  console.log(str);
   return regex.test(str);
 };
 
@@ -72,6 +71,10 @@ export default function ChatBot({ spaceId }) {
 
       // 첫 메시지를 보낸 후 isFirst를 0으로 설정
       setIsFirst(0);
+
+      return () => {
+        eventSource.close();
+      };
     }
   };
 
@@ -88,7 +91,6 @@ export default function ChatBot({ spaceId }) {
 
   const handleSubmitMsg = async (buttonMessage = "") => {
     const msg = buttonMessage !== "" ? buttonMessage : input;
-
     const newMessage = { message: msg, workSpaceId: workSpaceId };
 
     try {
@@ -118,6 +120,10 @@ export default function ChatBot({ spaceId }) {
 
           eventSource.onerror = () => {
             console.error("Error in AI message stream.");
+            eventSource.close();
+          };
+
+          return () => {
             eventSource.close();
           };
         }
@@ -200,10 +206,11 @@ export default function ChatBot({ spaceId }) {
           item.role === "user" ? (
             <UserDialog key={idx} data={item} />
           ) : item.content !== "images" ? (
-            <>
-              <AiDialog data={item} key={idx} />
+            <div key={idx}>
+              {/* 상위 div에 key를 할당 */}
+              <AiDialog data={item} />
               {messages.length === 1 && (
-                <div className={"flex flex-row gap-3"}>
+                <div key={idx} className={"flex flex-row gap-3"}>
                   <Button
                     text={"재료"}
                     onClick={() => onClickGuideButton(1)}
@@ -216,7 +223,7 @@ export default function ChatBot({ spaceId }) {
                   />
                 </div>
               )}
-            </>
+            </div>
           ) : (
             <>
               <AIImages></AIImages>
