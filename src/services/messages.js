@@ -17,7 +17,7 @@ export const postMessage = async (message) => {
 //1이면 first 0이면 아님
 
 export const postAIMessageUrl = async (isFirst = 0) =>
-  `${process.env.NEXT_PUBLIC_API_URL}${API_URLS.message}/recieve/${workSpaceId}/${isFirst}`;
+  `${process.env.NEXT_PUBLIC_API_URL_HTTPS}${API_URLS.message}/recieve/${workSpaceId}/${isFirst}`;
 
 export const getHistory = async () => {
   const res = await axiosApi.get(`${API_URLS.message}/${workSpaceId}`);
