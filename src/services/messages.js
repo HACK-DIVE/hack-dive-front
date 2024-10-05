@@ -1,3 +1,4 @@
+import axios from "axios";
 import axiosApi from "./axios";
 import { API_URLS } from "@/constants/config";
 
@@ -22,6 +23,13 @@ export const getHistory = async () => {
   const res = await axiosApi.get(`${API_URLS.message}/${workSpaceId}`);
 
   console.log(res);
+  return res.data;
+};
+export const getHealthCheck = async () => {
+  const res = await axios.get(process.env.NEXT_PUBLIC_API_URL_HTTPS);
+
+  console.log(res);
+  console.log("health.check");
   return res.data;
 };
 

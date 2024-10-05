@@ -5,7 +5,13 @@ import Send from "@/images/icon/send.svg";
 import AiDialog from "@/components/message/AiDialog";
 import UserDialog from "@/components/message/UserDialog";
 import { useEffect, useRef, useState } from "react";
-import { getHistory, postAIMessageUrl, postMessage } from "@/services/messages";
+import {
+  getHealthCheck,
+  getHistory,
+  postAIMessageUrl,
+  postMessage,
+} from "@/services/messages";
+import Button from "@/components/buttons/Button";
 
 export default function Home() {
   const [messages, setMessages] = useState([]);
@@ -89,11 +95,22 @@ export default function Home() {
       });
     }
   }, [streamingMessage]);
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleSubmitMsg();
+    }
+  };
 
-  //컴포넌트가 마운트 될 때 메시지 로드
-  useEffect(() => {
-    loadMessages();
-  }, []);
+  const handleButtonClick = async () => {
+    console.log("click");
+    const res = await getHealthCheck();
+    console.log(res);
+  };
+
+  // //컴포넌트가 마운트 될 때 메시지 로드
+  // useEffect(() => {
+  //   loadMessages();
+  // }, []);
 
   return (
     <div className="flex h-screen min-w-80 flex-col bg-gradient-to-tr from-[#000000] to-[#0C3E8D]">
@@ -102,11 +119,24 @@ export default function Home() {
       </div>
       {/* eslint-disable-next-line tailwindcss/no-custom-classname */}
       <div className="history flex-1 gap-2 overflow-y-auto p-6">
+        {/* //buttonGroup */}
+        <div className={"flex gap-3"}>
+          <Button text={"재료"}></Button>
+          <Button text={"재료"}></Button>
+          <Button
+            text={"재료 선택됨"}
+            onClick={handleButtonClick}
+            isSelected={true}
+          ></Button>
+        </div>
         {messages.map((item, idx) =>
           item.role === "user" ? (
-            <UserDialog data={item} key={idx} />
+            <UserDialog key={idx} />
           ) : (
-            <AiDialog data={item} key={idx} />
+            <>
+              <AiDialog data={item} key={idx} />
+              <Button text={"재료"} onClick={handleButtonClick}></Button>
+            </>
           ),
         )}
         <div ref={endOfMessagesRef}></div>
@@ -122,6 +152,7 @@ export default function Home() {
             onChange={(e) => {
               setInput(e.target.value);
             }}
+            onKeyDown={handleKeyDown} // Enter 키를 감지
           ></input>
           <Send
             className="w-8 cursor-pointer fill-[#BDBDBD] text-center hover:fill-current hover:text-[#2B4BDA]"

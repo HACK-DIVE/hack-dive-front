@@ -1,4 +1,4 @@
-export default function UserDialog({ data }) {
+export default function UserDialog(data) {
   const { name, content, last } = data;
   return (
     <div className={`flex flex-col items-end p-2 ${!last ? "mb-2" : ""}`}>

@@ -17,7 +17,7 @@ module.exports = {
         600: "600px",
       },
       fontFamily: {
-        sans: ["pretendardMedium", "Helvetica", "Arial", "sans-serif"],
+        sans: ["PretendardMedium", "Helvetica", "Arial", "sans-serif"],
       },
       spacing: {
         72: "18rem",
