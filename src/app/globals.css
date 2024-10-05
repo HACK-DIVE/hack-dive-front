@@ -3,14 +3,13 @@
 @tailwind utilities;
 
 /* globals.css 또는 다른 글로벌 CSS 파일 */
+
 @font-face {
-  font-family: "PretendardMedium";
-  src: url("../app/fonts/Pretendard-Medium.otf") format("opentype");
+  font-family: "PretendardLight";
+  src: url("../app/fonts/Pretendard-Light.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
 }
-
-
 
 :root {
   --background: #ffffff;
