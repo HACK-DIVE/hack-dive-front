@@ -12,6 +12,7 @@ import {
   postMessage,
 } from "@/services/messages";
 import Button from "@/components/buttons/Button";
+import AIImages from "@/components/message/AIImages";
 
 export default function Home() {
   const [messages, setMessages] = useState([]);
@@ -118,9 +119,9 @@ export default function Home() {
         <Logo className="h-full" />
       </div>
       {/* eslint-disable-next-line tailwindcss/no-custom-classname */}
-      <div className="history flex-1 gap-2 overflow-y-auto p-6">
+      <div className="history flex-1 items-start gap-2 overflow-y-auto p-6">
         {/* //buttonGroup */}
-        <div className={"flex gap-3"}>
+        <div className={"flex flex-row gap-3"}>
           <Button text={"재료"}></Button>
           <Button text={"재료"}></Button>
           <Button
@@ -129,6 +130,8 @@ export default function Home() {
             isSelected={true}
           ></Button>
         </div>
+
+        <AIImages></AIImages>
         {messages.map((item, idx) =>
           item.role === "user" ? (
             <UserDialog key={idx} />
