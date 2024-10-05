@@ -168,10 +168,6 @@ export default function ChatBot({ spaceId }) {
     }
   };
 
-  const handleButtonClick = async () => {
-    const res = await getHealthCheck();
-  };
-
   const onClickRefresh = async () => {
     try {
       const res = await postWorkSpace();
@@ -188,7 +184,7 @@ export default function ChatBot({ spaceId }) {
   useEffect(() => {
     loadMessages();
     setGuideChoice(0);
-  }, [workSpaceId]);
+  }, [loadMessages, workSpaceId]);
 
   return (
     <div className="flex h-screen min-w-80 flex-col bg-gradient-to-tr from-[#000000] to-[#0C3E8D]">
