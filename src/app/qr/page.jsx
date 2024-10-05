@@ -6,28 +6,33 @@ import { useEffect, useState } from "react";
 export default function Page() {
   const [workSpaceId, setWorkSpaceId] = useState(null); // null로 초기화
   const [isFirst, setIsFirst] = useState(1); // isFirst 상태를 부모로 이동
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); // Error state
 
   useEffect(() => {
     const fetchWorkSpaceId = async () => {
-      if (workSpaceId !== null) return; // null로 체크
+      if (workSpaceId !== null) return;
 
       try {
         const res = await postWorkSpace();
-        console.log("Workspace response:", res);
         if (res.status === 200) {
           setWorkSpaceId(res.data);
+          setLoading(false); // Stop loading
         } else {
           throw new Error("Failed to get workspace ID");
         }
       } catch (err) {
         console.error("refresh error", err);
-        // 사용자에게 에러 피드백 추가 (예: alert)
+        setError("Failed to load workspace. Please try again.");
+        setLoading(false);
       }
     };
 
     fetchWorkSpaceId();
-  }, []); // 의존성 배열에 추가
+  }, []);
 
+  if (loading) return <p>Loading workspace...</p>;
+  if (error) return <p>{error}</p>;
   return (
     <>
       {workSpaceId === null ? ( // null 체크
