@@ -4,7 +4,6 @@ import PoweredByLogo from "@/images/logo/poweredby_logo.svg";
 import Send from "@/images/icon/send.svg";
 import AiDialog from "@/components/message/AiDialog";
 import UserDialog from "@/components/message/UserDialog";
-import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { getHistory, postAIMessageUrl, postMessage } from "@/services/messages";
 
@@ -17,8 +16,7 @@ export default function Home() {
   const loadMessages = async () => {
     try {
       const res = await getHistory();
-      console.log("===========");
-      console.log(res);
+
       setMessages(res.data);
     } catch (error) {
       console.error("error fetching data", error);
@@ -42,12 +40,7 @@ export default function Home() {
 
         const eventSource = new EventSource(aiUrl);
         eventSource.onmessage = async (event) => {
-          // const newContent = event.data.replace(/\*/g, " ");
-
-          const newContent = event.data;
-
-          console.log("===========");
-          console.log(newContent);
+          const newContent = event.data.replace(/\*/g, " ");
 
           setStreamingMessage((prev) => prev + newContent);
         };
@@ -105,7 +98,7 @@ export default function Home() {
   return (
     <div className="flex h-screen min-w-80 flex-col bg-gradient-to-tr from-[#000000] to-[#0C3E8D]">
       <div className="relative flex h-24 items-center justify-start px-8 py-7">
-        <Logo className="h-full w-auto" />
+        <Logo className="h-full" />
       </div>
       {/* eslint-disable-next-line tailwindcss/no-custom-classname */}
       <div className="history flex-1 gap-2 overflow-y-auto p-6">
