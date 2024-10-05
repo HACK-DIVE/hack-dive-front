@@ -1,13 +1,11 @@
-import React from "react";
 import Logo from "@/images/logo/ansys_chatbot_logo.svg";
 import PoweredByLogo from "@/images/logo/poweredby_logo.svg";
 import Send from "@/images/icon/send.svg";
 import Refresh from "@/images/icon/refresh.svg";
 import AiDialog from "@/components/message/AiDialog";
 import UserDialog from "@/components/message/UserDialog";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import {
-  getHealthCheck,
   getHistory,
   postAIMessageUrl,
   postImages,
@@ -37,7 +35,7 @@ export default function ChatBot({ spaceId }) {
   const [workSpaceId, setWorkSpaceId] = useState(spaceId); //todo 추후 랜덤으로
   const [isFirst, setIsFirst] = useState(messages.length > 0 ? 0 : 1);
 
-  const loadMessages = async () => {
+  const loadMessages = useCallback(async () => {
     try {
       const res = await getHistory(workSpaceId);
 
@@ -53,7 +51,7 @@ export default function ChatBot({ spaceId }) {
     } catch (error) {
       console.error("error fetching data", error);
     }
-  };
+  });
 
   const handleEventMsg = async () => {
     // 사용자 메시지 추가
@@ -171,6 +169,8 @@ export default function ChatBot({ spaceId }) {
   const onClickRefresh = async () => {
     try {
       const res = await postWorkSpace();
+      setIsFirst(1);
+      setMessages([]);
       if (res.status !== 200) {
         throw new Error();
       }
@@ -184,8 +184,8 @@ export default function ChatBot({ spaceId }) {
   useEffect(() => {
     loadMessages();
     setGuideChoice(0);
-  }, [loadMessages, workSpaceId]);
-
+  }, [workSpaceId]);
+  console.log(isFirst);
   return (
     <div className="flex h-screen min-w-80 flex-col bg-gradient-to-tr from-[#000000] to-[#0C3E8D]">
       <div className="relative flex h-24 items-center justify-between px-6 py-7">

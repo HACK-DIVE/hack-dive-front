@@ -1,19 +1,8 @@
 "use client";
-import Logo from "@/images/logo/ansys_chatbot_logo.svg";
-import PoweredByLogo from "@/images/logo/poweredby_logo.svg";
-import Send from "@/images/icon/send.svg";
-import AiDialog from "@/components/message/AiDialog";
-import UserDialog from "@/components/message/UserDialog";
-import { useEffect, useRef, useState } from "react";
-import {
-  getHealthCheck,
-  getHistory,
-  postAIMessageUrl,
-  postMessage,
-  postWorkSpace,
-} from "@/services/messages";
-import Button from "@/components/buttons/Button";
-import AIImages from "@/components/message/AIImages";
+
+import { useEffect, useState } from "react";
+import { postWorkSpace } from "@/services/messages";
+
 import ChatBot from "@/components/chat/ChatBot";
 import ChatSVG from "@/images/icon/ansysChat.svg";
 
@@ -40,7 +29,7 @@ export default function Home() {
     (async () => {
       await onWorkSpaceId();
     })();
-  }, []);
+  }, [onWorkSpaceId]);
 
   const onClickChatbotHandler = () => {
     if (workSpaceId !== 0) {
@@ -52,20 +41,20 @@ export default function Home() {
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       <div
-        className="relative flex-grow transition-all duration-500 ease-in-out"
+        className="relative grow transition-all duration-500 ease-in-out"
         style={{ width: isOpenChatBot ? "calc(100% - 484px)" : "100%" }}
       >
-        <div className="h-full w-full">
+        <div className="size-full">
           <video
             src="video.mp4"
-            className="h-full w-full object-cover"
+            className="size-full object-cover"
             controls
             loop
             muted
           ></video>
         </div>
         <div
-          className="absolute z-10 h-fit w-fit cursor-pointer rounded-[12px] bg-gradient-to-tl from-[#0C3E8D] to-[#010204] px-4 py-2 text-white transition-all duration-500 ease-in-out hover:brightness-75"
+          className="absolute z-10 size-fit cursor-pointer rounded-[12px] bg-gradient-to-tl from-[#0C3E8D] to-[#010204] px-4 py-2 text-white transition-all duration-500 ease-in-out hover:brightness-75"
           style={{
             right: "1rem",
             top: "10rem",
