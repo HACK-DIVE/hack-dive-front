@@ -71,7 +71,7 @@ export default function Home() {
         }`}
       >
         <div className="h-full">
-          {/* {isOpenChatBot && <ChatBot spaceId={workSpaceId} />} */}
+          {isOpenChatBot && <ChatBot spaceId={workSpaceId} />}
         </div>
       </div>
     </div>
