@@ -26,9 +26,9 @@ export default function Home() {
 
   useEffect(() => {
     // 비동기 IIFE를 사용하여 컴포넌트 마운트 시 workSpaceId 설정
-    // (async () => {
-    //   await onWorkSpaceId();
-    // })();
+    (async () => {
+      await onWorkSpaceId();
+    })();
   }, []);
 
   const onClickChatbotHandler = () => {
