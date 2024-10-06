@@ -11,27 +11,27 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null); // Error state
 
-  useEffect(() => {
-    const fetchWorkSpaceId = async () => {
-      if (workSpaceId !== null) return;
+  // useEffect(() => {
+  //   const fetchWorkSpaceId = async () => {
+  //     if (workSpaceId !== null) return;
 
-      try {
-        const res = await postWorkSpace();
-        if (res.status === 200) {
-          setWorkSpaceId(res.data);
-          setLoading(false); // Stop loading
-        } else {
-          throw new Error("Failed to get workspace ID");
-        }
-      } catch (err) {
-        console.error("refresh error", err);
-        setError("Failed to load workspace. Please try again.");
-        setLoading(false);
-      }
-    };
+  //     try {
+  //       const res = await postWorkSpace();
+  //       if (res.status === 200) {
+  //         setWorkSpaceId(res.data);
+  //         setLoading(false); // Stop loading
+  //       } else {
+  //         throw new Error("Failed to get workspace ID");
+  //       }
+  //     } catch (err) {
+  //       console.error("refresh error", err);
+  //       setError("Failed to load workspace. Please try again.");
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchWorkSpaceId();
-  }, []);
+  //   fetchWorkSpaceId();
+  // }, []);
 
   if (loading) return <p>Loading workspace...</p>;
   if (error) return <p>{error}</p>;
