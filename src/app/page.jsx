@@ -33,7 +33,7 @@ export default function Home() {
   //   fetchWorkSpaceId();
   // }, []);
 
-  if (loading) return <p>Loading workspace...</p>;
+  if (loading) return <div className="bg-white">adasd</div>;
   if (error) return <p>{error}</p>;
   return (
     <>
