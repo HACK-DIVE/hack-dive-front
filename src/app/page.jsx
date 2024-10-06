@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { postWorkSpace } from "@/services/messages";
 
 import ChatBot from "@/components/chat/ChatBot";
-import ChatSVG from "@/images/icon/ansysChat.svg";
 
 export default function Home() {
   const [workSpaceId, setWorkSpaceId] = useState(null); // null로 초기화
@@ -41,11 +40,12 @@ export default function Home() {
       {workSpaceId === null ? ( // null 체크
         <p>Loading workspace...</p>
       ) : (
-        <ChatBot
-          spaceId={workSpaceId}
-          isFirst={isFirst}
-          setIsFirst={setIsFirst}
-        />
+        <div className="bg-white">adasd</div>
+        // <ChatBot
+        //   spaceId={workSpaceId}
+        //   isFirst={isFirst}
+        //   setIsFirst={setIsFirst}
+        // />
       )}
     </>
   );
