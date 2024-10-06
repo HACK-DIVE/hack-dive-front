@@ -25,11 +25,6 @@ export const getHistory = async (workSpaceId) => {
 
   return res.data;
 };
-export const getHealthCheck = async () => {
-  const res = await axios.get(process.env.NEXT_PUBLIC_API_URL_HTTPS);
-
-  return res.data;
-};
 
 //응답은 워크스페이스 Id
 export const postWorkSpace = async () => {
